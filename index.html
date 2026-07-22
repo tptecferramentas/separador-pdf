@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Separador de PDF Gratis 110% | TP tec - Ferramentas</title>
+    <link rel="stylesheet" href="style.css">
+    
+    <!-- Bibliotecas necessárias para processar PDF no navegador -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
+    <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+</head>
+<body>
+    <header class="top-header">
+        <div class="logo">TP tec - Ferramentas</div>
+    </header>
+
+    <!-- Espaço reservado para futuro Banner Adsterra Topo -->
+    <!-- <div class="ad-container">Código Adsterra Aqui</div> -->
+
+    <main class="container">
+        <div class="tool-box">
+            <h1>Separador de PDF Gratis 110%</h1>
+            <p class="subtitle">Faça upload de seus PDFs, digite uma palavra-chave (Nome, Matrícula, etc.) e geraremos um único arquivo apenas com as páginas onde a palavra aparece.</p>
+
+            <div class="input-group">
+                <label for="pdf-files">1. Selecione os arquivos PDF (pode ser mais de um):</label>
+                <input type="file" id="pdf-files" accept=".pdf" multiple>
+            </div>
+
+            <div class="input-group">
+                <label for="keyword">2. Palavra-chave para busca (CTRL+F):</label>
+                <input type="text" id="keyword" placeholder="Ex: João da Silva, 123456...">
+            </div>
+
+            <button id="process-btn" class="btn-primary">Extrair e Gerar PDF</button>
+
+            <div id="status-area" class="status-area hidden">
+                <div class="loader" id="loader"></div>
+                <p id="status-text">Processando seus arquivos. Isso pode levar alguns segundos...</p>
+            </div>
+
+            <div id="download-area" class="download-area hidden">
+                <p>Sucesso! Encontramos páginas com sua palavra-chave.</p>
+                <button id="download-btn" class="btn-success">Baixar Novo PDF</button>
+            </div>
+        </div>
+    </main>
+
+    <!-- Espaço reservado para futuro Banner Adsterra Rodapé -->
+    <!-- <div class="ad-container">Código Adsterra Aqui</div> -->
+
+    <footer>
+        <p>&copy; 2026 TP tec - Ferramentas. Todos os direitos reservados.</p>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
