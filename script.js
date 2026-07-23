@@ -188,25 +188,37 @@ const contactForm = document.getElementById('contact-form');
 contactBtn.addEventListener('click', () => contactModal.classList.add('active'));
 closeContact.addEventListener('click', () => contactModal.classList.remove('active'));
 
-// Processar Envio do Formulário (Abre cliente de E-mail formatado)
+// Processar Envio do Formulário (Envio real em segundo plano)
 contactForm.addEventListener('submit', (e) => {
     e.preventDefault(); 
 
-    const email = document.getElementById('contato-email').value;
-    const zap = document.getElementById('contato-zap').value || 'Não informado';
-    const msg = document.getElementById('contato-msg').value;
+    const submitBtn = document.getElementById('submit-btn');
+    submitBtn.innerText = "Enviando..."; // Dá um feedback visual para o usuário
+    submitBtn.disabled = true;
 
-    const assunto = encodeURIComponent("Novo Contato - Site TP tec");
-    const corpo = encodeURIComponent(
-        `E-mail de retorno: ${email}\nWhatsApp: ${zap}\n\nMensagem:\n${msg}`
-    );
+    // Coleta todos os dados do formulário
+    const formData = new FormData(contactForm);
 
-    // Abre o app de e-mail padrão do usuário já preenchido
-    window.location.href = `mailto:tptectecnologias@gmail.com?subject=${assunto}&body=${corpo}`;
-    
-    // Fecha o modal e limpa form
-    contactModal.classList.remove('active');
-    contactForm.reset();
+    // Envia os dados para a API do FormSubmit
+    fetch("https://formsubmit.co/ajax/tptectecnologias@gmail.com", {
+        method: "POST",
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        alert("✅ Mensagem enviada com sucesso! Entraremos em contato em breve.");
+        contactModal.classList.remove('active'); // Fecha o modal
+        contactForm.reset(); // Limpa os campos
+    })
+    .catch(error => {
+        alert("❌ Ocorreu um erro ao enviar. Por favor, verifique sua conexão ou tente novamente mais tarde.");
+        console.error(error);
+    })
+    .finally(() => {
+        // Restaura o botão
+        submitBtn.innerText = "Enviar Mensagem";
+        submitBtn.disabled = false;
+    });
 });
 
 // Elementos Modal OCR
