@@ -4,7 +4,6 @@
 const pdfjsLib = window['pdfjs-dist/build/pdf'];
 pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
 
-// Array global para acumular arquivos de várias importações/pastas diferentes
 let selectedFilesArray = [];
 
 const fileInput = document.getElementById('pdf-files');
@@ -13,48 +12,80 @@ const fileUl = document.getElementById('file-ul');
 const clearAllBtn = document.getElementById('clear-all-btn');
 
 // ==========================================
-// 1. GERENCIAMENTO DE ACUMULAÇÃO DE ARQUIVOS
+// 1. CARREGAMENTO DA PÁGINA E ANÚNCIOS (LAZY LOAD)
+// ==========================================
+window.addEventListener('load', () => {
+    const loader = document.getElementById('page-loader');
+    loader.style.opacity = '0';
+    
+    setTimeout(() => {
+        loader.style.display = 'none';
+        // Atraso intencional para garantir que o usuário veja a página antes de pesar a rede
+        setTimeout(loadAds, 500); 
+    }, 500);
+});
+
+function loadAds() {
+    const adsConfig = [
+        { slotId: 'top-ad-slot', key: '66e510cf5fb42ab9066b080fb8c48c2e' },
+        { slotId: 'left-ad-slot', key: '2cadcec815b23b9842036a54bca5bd9c' },
+        { slotId: 'right-ad-slot', key: '2cadcec815b23b9842036a54bca5bd9c' }
+    ];
+
+    adsConfig.forEach(ad => {
+        const container = document.getElementById(ad.slotId);
+        if (container) {
+            // Cria um script de forma dinâmica
+            const script = document.createElement('script');
+            script.type = 'text/javascript';
+            script.src = `https://www.highperformanceformat.com/${ad.key}/invoke.js`;
+            
+            // Adsterra exige que o atOptions esteja definido antes
+            window.atOptions = {
+                'key' : ad.key,
+                'format' : 'iframe',
+                'height' : (ad.slotId === 'top-ad-slot') ? 90 : 250,
+                'width' : (ad.slotId === 'top-ad-slot') ? 728 : 300,
+                'params' : {}
+            };
+            container.appendChild(script);
+        }
+    });
+}
+
+// ==========================================
+// 2. GERENCIAMENTO DE ARQUIVOS
 // ==========================================
 fileInput.addEventListener('change', (event) => {
     const newFiles = Array.from(event.target.files);
-    
     if (newFiles.length === 0) return;
 
-    // Adiciona apenas os arquivos que ainda não estão na lista (evita duplicados idênticos)
     newFiles.forEach(newFile => {
         const exists = selectedFilesArray.some(f => f.name === newFile.name && f.size === newFile.size);
-        if (!exists) {
-            selectedFilesArray.push(newFile);
-        }
+        if (!exists) selectedFilesArray.push(newFile);
     });
 
     renderFileList();
-    fileInput.value = ''; // Reseta o input para permitir selecionar novos arquivos da mesma pasta ou de outra
+    fileInput.value = ''; 
 });
 
-// Remove um arquivo específico da lista acumulada
 window.removeFile = function(index) {
     selectedFilesArray.splice(index, 1);
     renderFileList();
 };
 
-// Limpa todos os arquivos da lista
 clearAllBtn.addEventListener('click', () => {
     selectedFilesArray = [];
     renderFileList();
 });
 
-// Atualiza a interface visual da lista de arquivos
 function renderFileList() {
     fileUl.innerHTML = '';
-    
     if (selectedFilesArray.length === 0) {
         fileListContainer.classList.add('hidden');
         return;
     }
-
     fileListContainer.classList.remove('hidden');
-
     selectedFilesArray.forEach((file, index) => {
         const li = document.createElement('li');
         li.innerHTML = `
@@ -66,7 +97,7 @@ function renderFileList() {
 }
 
 // ==========================================
-// 2. PROCESSAMENTO E BUSCA NO PDF
+// 3. PROCESSAMENTO DO PDF E MODAL OCR
 // ==========================================
 document.getElementById('process-btn').addEventListener('click', async () => {
     const keywordInput = document.getElementById('keyword').value.trim();
@@ -76,17 +107,9 @@ document.getElementById('process-btn').addEventListener('click', async () => {
     const downloadArea = document.getElementById('download-area');
     const processBtn = document.getElementById('process-btn');
 
-    // Validações iniciais
-    if (selectedFilesArray.length === 0) {
-        alert("Por favor, selecione pelo menos um arquivo PDF.");
-        return;
-    }
-    if (!keywordInput) {
-        alert("Por favor, digite uma palavra-chave para buscar.");
-        return;
-    }
+    if (selectedFilesArray.length === 0) return alert("Selecione pelo menos um arquivo PDF.");
+    if (!keywordInput) return alert("Digite uma palavra-chave para buscar.");
 
-    // Prepara a interface para o carregamento
     processBtn.disabled = true;
     downloadArea.classList.add('hidden');
     statusArea.classList.remove('hidden');
@@ -97,16 +120,13 @@ document.getElementById('process-btn').addEventListener('click', async () => {
         const { PDFDocument } = PDFLib;
         const mergedPdf = await PDFDocument.create();
         let pagesFound = 0;
-
-        // Passo A: Pré-leitura para calcular o total global de páginas de todos os arquivos acumulados
         let totalPagesGlobal = 0;
         const pdfDocsText = [];
         const pdfDocsEdit = [];
 
+        // Pre-leitura
         for (let i = 0; i < selectedFilesArray.length; i++) {
-            const file = selectedFilesArray[i];
-            const arrayBuffer = await file.arrayBuffer();
-            
+            const arrayBuffer = await selectedFilesArray[i].arrayBuffer();
             const loadingTask = pdfjsLib.getDocument({ data: arrayBuffer });
             const pdfDocText = await loadingTask.promise;
             const pdfDocEdit = await PDFDocument.load(arrayBuffer);
@@ -116,9 +136,8 @@ document.getElementById('process-btn').addEventListener('click', async () => {
             totalPagesGlobal += pdfDocText.numPages;
         }
 
-        // Passo B: Varredura página por página com porcentagem e contagem em tempo real
+        // Varredura
         let currentPageGlobal = 0;
-
         for (let i = 0; i < selectedFilesArray.length; i++) {
             const pdfDocText = pdfDocsText[i];
             const pdfDocEdit = pdfDocsEdit[i];
@@ -126,26 +145,20 @@ document.getElementById('process-btn').addEventListener('click', async () => {
 
             for (let pageNum = 1; pageNum <= pdfDocText.numPages; pageNum++) {
                 currentPageGlobal++;
-                
-                // Calcula a porcentagem exata
                 const percent = ((currentPageGlobal / totalPagesGlobal) * 100).toFixed(1);
                 
-                // Atualiza o texto e a barra de progresso visual
                 statusText.innerText = `Lendo página ${currentPageGlobal} de ${totalPagesGlobal} (${percent}%)`;
                 progressBarFill.style.width = `${percent}%`;
 
-                // Extrai texto da página atual
                 const page = await pdfDocText.getPage(pageNum);
                 const textContent = await page.getTextContent();
                 const pageText = textContent.items.map(item => item.str).join(' ');
 
-                // Verifica se a palavra-chave existe na página (ignorando maiúsculas/minúsculas)
                 if (pageText.toLowerCase().includes(keywordInput.toLowerCase())) {
-                    pagesToCopy.push(pageNum - 1); // PDF-lib usa índice baseado em 0
+                    pagesToCopy.push(pageNum - 1);
                 }
             }
 
-            // Se encontrou correspondências neste arquivo, copia para o PDF final
             if (pagesToCopy.length > 0) {
                 const copiedPages = await mergedPdf.copyPages(pdfDocEdit, pagesToCopy);
                 copiedPages.forEach((copiedPage) => {
@@ -155,11 +168,9 @@ document.getElementById('process-btn').addEventListener('click', async () => {
             }
         }
 
-        // Oculta a área de status e reativa o botão
         statusArea.classList.add('hidden');
         processBtn.disabled = false;
 
-        // Passo C: Se encontrou páginas, gera o arquivo para download
         if (pagesFound > 0) {
             downloadArea.classList.remove('hidden');
             document.getElementById('success-message').innerText = `Sucesso! Encontramos ${pagesFound} página(s) com sua palavra-chave.`;
@@ -179,13 +190,65 @@ document.getElementById('process-btn').addEventListener('click', async () => {
                 a.click();
             });
         } else {
-            alert(`Nenhuma página contendo a palavra "${keywordInput}" foi encontrada nos arquivos selecionados.`);
+            // AQUI ESTÁ A MELHORIA: Em vez de alert, abre o Modal de Cross-sell (OCR)
+            document.getElementById('ocr-modal').classList.add('active');
         }
 
     } catch (error) {
         console.error("Erro no processamento:", error);
         statusArea.classList.add('hidden');
         processBtn.disabled = false;
-        alert("Ocorreu um erro ao processar os arquivos. Verifique se os PDFs não estão corrompidos ou protegidos por senha.");
+        alert("Ocorreu um erro. O arquivo pode estar corrompido ou protegido.");
     }
+});
+
+// ==========================================
+// 4. LÓGICA DOS MODAIS (CONTATO E OCR)
+// ==========================================
+
+// Elementos Modal Contato
+const contactBtn = document.getElementById('fab-contact');
+const contactModal = document.getElementById('contact-modal');
+const closeContact = document.getElementById('close-contact');
+const contactForm = document.getElementById('contact-form');
+
+// Abrir e Fechar Modal de Contato
+contactBtn.addEventListener('click', () => contactModal.classList.add('active'));
+closeContact.addEventListener('click', () => contactModal.classList.remove('active'));
+
+// Processar Envio do Formulário (Abre cliente de E-mail formatado)
+contactForm.addEventListener('submit', (e) => {
+    e.preventDefault(); // Evita recarregar a página
+
+    const email = document.getElementById('contato-email').value;
+    const zap = document.getElementById('contato-zap').value || 'Não informado';
+    const msg = document.getElementById('contato-msg').value;
+
+    // Formata a mensagem para a URL (quebra de linha e espaços)
+    const assunto = encodeURIComponent("Novo Contato - Site TP tec");
+    const corpo = encodeURIComponent(
+        `E-mail de retorno: ${email}\nWhatsApp: ${zap}\n\nMensagem:\n${msg}`
+    );
+
+    // Abre o app de e-mail padrão do usuário já preenchido
+    window.location.href = `mailto:tptectecnologias@gmail.com?subject=${assunto}&body=${corpo}`;
+    
+    // Fecha o modal e limpa form
+    contactModal.classList.remove('active');
+    contactForm.reset();
+});
+
+// Elementos Modal OCR
+const ocrModal = document.getElementById('ocr-modal');
+const closeOcr = document.getElementById('close-ocr');
+const btnCloseOcrAlt = document.getElementById('btn-close-ocr-alt');
+
+// Fechar Modal OCR
+closeOcr.addEventListener('click', () => ocrModal.classList.remove('active'));
+btnCloseOcrAlt.addEventListener('click', () => ocrModal.classList.remove('active'));
+
+// Fecha modais ao clicar fora da caixa branca
+window.addEventListener('click', (e) => {
+    if (e.target === contactModal) contactModal.classList.remove('active');
+    if (e.target === ocrModal) ocrModal.classList.remove('active');
 });
