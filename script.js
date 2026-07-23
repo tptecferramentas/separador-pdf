@@ -1,7 +1,40 @@
-// Configura o worker do PDF.js (Necessário para a biblioteca funcionar no navegador)
+// Configura o worker do PDF.js
 const pdfjsLib = window['pdfjs-dist/build/pdf'];
 pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
 
+let totalPagesGlobal = 0;
+
+// Evento disparado assim que o usuário seleciona os arquivos
+document.getElementById('pdf-files').addEventListener('change', async (event) => {
+    const files = event.target.files;
+    const fileInfo = document.getElementById('file-info');
+
+    if (files.length === 0) {
+        fileInfo.classList.add('hidden');
+        return;
+    }
+
+    fileInfo.classList.remove('hidden');
+    fileInfo.innerText = "Lendo informações dos arquivos...";
+
+    let totalPages = 0;
+
+    try {
+        for (let i = 0; i < files.length; i++) {
+            const arrayBuffer = await files[i].arrayBuffer();
+            const loadingTask = pdfjsLib.getDocument({ data: arrayBuffer });
+            const pdfDoc = await loadingTask.promise;
+            totalPages += pdfDoc.numPages;
+        }
+        totalPagesGlobal = totalPages;
+        fileInfo.innerText = `📄 ${files.length} arquivo(s) carregado(s) | Total: ${totalPages} página(s) pronta(s) para análise.`;
+    } catch (error) {
+        console.error(error);
+        fileInfo.innerText = "⚠️ Erro ao ler o total de páginas dos PDFs.";
+    }
+});
+
+// Evento do botão de processar
 document.getElementById('process-btn').addEventListener('click', async () => {
     const fileInput = document.getElementById('pdf-files');
     const keywordInput = document.getElementById('keyword').value.trim();
@@ -10,7 +43,6 @@ document.getElementById('process-btn').addEventListener('click', async () => {
     const downloadArea = document.getElementById('download-area');
     const processBtn = document.getElementById('process-btn');
 
-    // Validações
     if (fileInput.files.length === 0) {
         alert("Por favor, selecione pelo menos um arquivo PDF.");
         return;
@@ -20,46 +52,39 @@ document.getElementById('process-btn').addEventListener('click', async () => {
         return;
     }
 
-    // Prepara a interface
     processBtn.disabled = true;
     downloadArea.classList.add('hidden');
     statusArea.classList.remove('hidden');
-    statusText.innerText = "Lendo e buscando arquivos... Isso pode levar um tempo dependendo do tamanho.";
 
     try {
         const { PDFDocument } = PDFLib;
-        // Cria um novo PDF em branco onde vamos colar as páginas encontradas
         const mergedPdf = await PDFDocument.create();
         let pagesFound = 0;
+        let currentPageGlobal = 0;
 
-        // Loop por cada arquivo selecionado
         for (let i = 0; i < fileInput.files.length; i++) {
             const file = fileInput.files[i];
             const arrayBuffer = await file.arrayBuffer();
             
-            // 1. Lê o PDF usando PDF.js para extrair o texto
             const loadingTask = pdfjsLib.getDocument({ data: arrayBuffer });
             const pdfDocText = await loadingTask.promise;
-            
-            // 2. Lê o PDF usando pdf-lib para manipulação
             const pdfDocEdit = await PDFDocument.load(arrayBuffer);
             const pagesToCopy = [];
 
-            // Loop por cada página do arquivo atual
             for (let pageNum = 1; pageNum <= pdfDocText.numPages; pageNum++) {
+                currentPageGlobal++;
+                // Atualização em tempo real na tela
+                statusText.innerText = `Analisando página ${currentPageGlobal} de ${totalPagesGlobal || '?'}`;
+
                 const page = await pdfDocText.getPage(pageNum);
                 const textContent = await page.getTextContent();
-                
-                // Junta todo o texto da página em uma única string
                 const pageText = textContent.items.map(item => item.str).join(' ');
 
-                // Faz a busca da palavra-chave (ignorando letras maiúsculas/minúsculas)
                 if (pageText.toLowerCase().includes(keywordInput.toLowerCase())) {
-                    pagesToCopy.push(pageNum - 1); // pdf-lib conta páginas a partir do zero (0)
+                    pagesToCopy.push(pageNum - 1);
                 }
             }
 
-            // Se achou páginas com a palavra neste arquivo, copia elas para o novo PDF
             if (pagesToCopy.length > 0) {
                 const copiedPages = await mergedPdf.copyPages(pdfDocEdit, pagesToCopy);
                 copiedPages.forEach((copiedPage) => {
@@ -69,22 +94,18 @@ document.getElementById('process-btn').addEventListener('click', async () => {
             }
         }
 
-        // Finalização
         statusArea.classList.add('hidden');
         processBtn.disabled = false;
 
         if (pagesFound > 0) {
             downloadArea.classList.remove('hidden');
+            document.getElementById('success-message').innerText = `Sucesso! Encontramos ${pagesFound} página(s) com sua palavra-chave.`;
             
-            // Gera o PDF final
             const pdfBytes = await mergedPdf.save();
-            
-            // Configura o botão de download
             const blob = new Blob([pdfBytes], { type: "application/pdf" });
             const url = URL.createObjectURL(blob);
             
             const downloadBtn = document.getElementById('download-btn');
-            // Remove listeners antigos caso o usuário clique várias vezes
             const newDownloadBtn = downloadBtn.cloneNode(true);
             downloadBtn.parentNode.replaceChild(newDownloadBtn, downloadBtn);
             
@@ -95,13 +116,13 @@ document.getElementById('process-btn').addEventListener('click', async () => {
                 a.click();
             });
         } else {
-            alert(`Nenhuma página contendo a palavra "${keywordInput}" foi encontrada nos PDFs fornecidos.`);
+            alert(`Nenhuma página contendo a palavra "${keywordInput}" foi encontrada.`);
         }
 
     } catch (error) {
         console.error(error);
         statusArea.classList.add('hidden');
         processBtn.disabled = false;
-        alert("Ocorreu um erro ao processar os arquivos. Verifique se os PDFs são válidos e não estão protegidos por senha.");
+        alert("Ocorreu um erro ao processar os arquivos. Verifique se os PDFs não estão corrompidos.");
     }
 });
