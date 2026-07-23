@@ -14,8 +14,6 @@ const clearAllBtn = document.getElementById('clear-all-btn');
 // ==========================================
 // 1. CARREGAMENTO DA PÁGINA (SUPER RÁPIDO)
 // ==========================================
-// A tela de carregamento some assim que a estrutura HTML estiver pronta,
-// permitindo que os anúncios carreguem sem atrasar a visualização da ferramenta.
 document.addEventListener('DOMContentLoaded', () => {
     const loader = document.getElementById('page-loader');
     loader.style.opacity = '0';
@@ -162,7 +160,6 @@ document.getElementById('process-btn').addEventListener('click', async () => {
                 a.click();
             });
         } else {
-            // Se não achar nada, abre o Modal de Oferta/OCR
             document.getElementById('ocr-modal').classList.add('active');
         }
 
@@ -177,60 +174,54 @@ document.getElementById('process-btn').addEventListener('click', async () => {
 // ==========================================
 // 4. LÓGICA DOS MODAIS (CONTATO E OCR)
 // ==========================================
-
-// Elementos Modal Contato
 const contactBtn = document.getElementById('fab-contact');
 const contactModal = document.getElementById('contact-modal');
 const closeContact = document.getElementById('close-contact');
 const contactForm = document.getElementById('contact-form');
 
-// Abrir e Fechar Modal de Contato
 contactBtn.addEventListener('click', () => contactModal.classList.add('active'));
 closeContact.addEventListener('click', () => contactModal.classList.remove('active'));
 
-// Processar Envio do Formulário (Envio real em segundo plano)
+// Processar Envio do Formulário (FormSubmit com Header Accept)
 contactForm.addEventListener('submit', (e) => {
     e.preventDefault(); 
 
     const submitBtn = document.getElementById('submit-btn');
-    submitBtn.innerText = "Enviando..."; // Dá um feedback visual para o usuário
+    submitBtn.innerText = "Enviando..."; 
     submitBtn.disabled = true;
 
-    // Coleta todos os dados do formulário
     const formData = new FormData(contactForm);
 
-    // Envia os dados para a API do FormSubmit
     fetch("https://formsubmit.co/ajax/tptectecnologias@gmail.com", {
         method: "POST",
+        headers: { 
+            'Accept': 'application/json'
+        },
         body: formData
     })
     .then(response => response.json())
     .then(data => {
         alert("✅ Mensagem enviada com sucesso! Entraremos em contato em breve.");
-        contactModal.classList.remove('active'); // Fecha o modal
-        contactForm.reset(); // Limpa os campos
+        contactModal.classList.remove('active'); 
+        contactForm.reset(); 
     })
     .catch(error => {
-        alert("❌ Ocorreu um erro ao enviar. Por favor, verifique sua conexão ou tente novamente mais tarde.");
+        alert("❌ Ocorreu um erro ao enviar. Verifique sua conexão.");
         console.error(error);
     })
     .finally(() => {
-        // Restaura o botão
         submitBtn.innerText = "Enviar Mensagem";
         submitBtn.disabled = false;
     });
 });
 
-// Elementos Modal OCR
 const ocrModal = document.getElementById('ocr-modal');
 const closeOcr = document.getElementById('close-ocr');
 const btnCloseOcrAlt = document.getElementById('btn-close-ocr-alt');
 
-// Fechar Modal OCR
 closeOcr.addEventListener('click', () => ocrModal.classList.remove('active'));
 btnCloseOcrAlt.addEventListener('click', () => ocrModal.classList.remove('active'));
 
-// Fecha modais ao clicar fora da caixa branca
 window.addEventListener('click', (e) => {
     if (e.target === contactModal) contactModal.classList.remove('active');
     if (e.target === ocrModal) ocrModal.classList.remove('active');
