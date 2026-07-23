@@ -39,8 +39,30 @@ body {
     flex: 1;
     display: flex;
     justify-content: center;
-    align-items: center;
+    align-items: flex-start; /* Alinha os blocos pelo topo */
+    gap: 20px; /* Espaço entre a ferramenta e os anúncios */
     padding: 40px 20px;
+    max-width: 1300px;
+    margin: 0 auto;
+    width: 100%;
+}
+
+.side-ad {
+    width: 300px; /* Largura ideal para banners quadrados */
+    min-height: 250px;
+    background-color: #e0e0e0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 1px dashed #ccc;
+    flex-shrink: 0;
+}
+
+/* Esconde os anúncios laterais em telas de celular para não estragar o design */
+@media (max-width: 1024px) {
+    .side-ad {
+        display: none;
+    }
 }
 
 .tool-box {
