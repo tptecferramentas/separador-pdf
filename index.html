@@ -62,13 +62,15 @@
         <!-- Caixa da Ferramenta -->
         <div class="tool-box">
             <h1>Separador de PDF 100% Grátis</h1>
-            <p class="subtitle">Faça upload de seus PDFs, digite uma palavra-chave (Nome, Matrícula, etc.) e geraremos um único arquivo apenas com as páginas onde a palavra aparece.</p>
+            <p class="subtitle">Faça upload de seus PDFs (de pastas diferentes se quiser), digite uma palavra-chave e geraremos um único arquivo com as páginas encontradas.</p>
 
             <div class="input-group">
-                <label for="pdf-files">1. Selecione os arquivos PDF (pode ser mais de um):</label>
+                <label for="pdf-files">1. Selecione os arquivos PDF:</label>
                 <input type="file" id="pdf-files" accept=".pdf" multiple>
-                <!-- Área onde aparecerá o total de páginas ao importar -->
-                <p id="file-info" class="file-info-text hidden"></p>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 5px;">
+                    <p id="file-info" class="file-info-text hidden"></p>
+                    <button id="clear-files-btn" class="hidden" style="background: none; border: none; color: #ff6a00; font-size: 0.85rem; cursor: pointer; text-decoration: underline;">Limpar lista</button>
+                </div>
             </div>
 
             <div class="input-group">
@@ -81,7 +83,7 @@
             <!-- Área de Status com contagem em tempo real -->
             <div id="status-area" class="status-area hidden">
                 <div class="loader" id="loader"></div>
-                <p id="status-text">Iniciando processamento...</p>
+                <p id="status-text">Iniciando contagem de páginas...</p>
             </div>
 
             <div id="download-area" class="download-area hidden">
