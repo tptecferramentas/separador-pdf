@@ -28,7 +28,7 @@
         <div class="logo">TP tec - Ferramentas</div>
     </header>
 
-    <!-- Banner Adsterra Topo (Corrigido e Centralizado) -->
+    <!-- Banner Adsterra Topo -->
     <div class="ad-container">
         <script>
             atOptions = {
@@ -42,10 +42,10 @@
         <script src="https://www.highperformanceformat.com/66e510cf5fb42ab9066b080fb8c48c2e/invoke.js"></script>
     </div>
 
-    <!-- Área Principal com 3 Colunas (Anúncio | Ferramenta | Anúncio) -->
+    <!-- Área Principal com 3 Colunas -->
     <main class="container">
         
-        <!-- Anúncio Lateral Esquerdo (Quadrado) -->
+        <!-- Anúncio Lateral Esquerdo -->
         <div class="side-ad left-ad">
             <script>
                 atOptions = {
@@ -67,6 +67,8 @@
             <div class="input-group">
                 <label for="pdf-files">1. Selecione os arquivos PDF (pode ser mais de um):</label>
                 <input type="file" id="pdf-files" accept=".pdf" multiple>
+                <!-- Área onde aparecerá o total de páginas ao importar -->
+                <p id="file-info" class="file-info-text hidden"></p>
             </div>
 
             <div class="input-group">
@@ -76,18 +78,19 @@
 
             <button id="process-btn" class="btn-primary">Extrair e Gerar PDF</button>
 
+            <!-- Área de Status com contagem em tempo real -->
             <div id="status-area" class="status-area hidden">
                 <div class="loader" id="loader"></div>
-                <p id="status-text">Processando seus arquivos. Isso pode levar alguns segundos...</p>
+                <p id="status-text">Iniciando processamento...</p>
             </div>
 
             <div id="download-area" class="download-area hidden">
-                <p>Sucesso! Encontramos páginas com sua palavra-chave.</p>
+                <p id="success-message">Sucesso! Encontramos páginas com sua palavra-chave.</p>
                 <button id="download-btn" class="btn-success">Baixar Novo PDF</button>
             </div>
         </div>
 
-        <!-- Anúncio Lateral Direito (Quadrado) -->
+        <!-- Anúncio Lateral Direito -->
         <div class="side-ad right-ad">
             <script>
                 atOptions = {
@@ -109,7 +112,6 @@
 
     <script src="script.js"></script>
 
-    <!-- Script para ocultar a tela de carregamento quando a página abrir -->
     <script>
         window.addEventListener('load', () => {
             const loader = document.getElementById('page-loader');
