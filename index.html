@@ -13,7 +13,7 @@
     <link rel="stylesheet" href="style.css">
     
     <!-- Bibliotecas necessárias para processar PDF no navegador -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script> 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
     <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
 </head>
 <body>
@@ -134,19 +134,24 @@
             <h2>Fale com a TP tec</h2>
             <p>Deixe sua mensagem, faça um orçamento ou tire dúvidas!</p>
             <form id="contact-form">
+                <!-- Configurações Ocultas para o FormSubmit -->
+                <input type="hidden" name="_subject" value="Novo Contato - Site TP tec">
+                <input type="hidden" name="_template" value="table">
+                <input type="hidden" name="_captcha" value="false">
+                
                 <div class="form-group">
                     <label for="contato-email">Seu E-mail (Obrigatório)*</label>
-                    <input type="email" id="contato-email" required placeholder="exemplo@email.com">
+                    <input type="email" id="contato-email" name="email" required placeholder="exemplo@email.com">
                 </div>
                 <div class="form-group">
                     <label for="contato-zap">Seu WhatsApp (Opcional)</label>
-                    <input type="tel" id="contato-zap" placeholder="(00) 00000-0000">
+                    <input type="tel" id="contato-zap" name="whatsapp" placeholder="(00) 00000-0000">
                 </div>
                 <div class="form-group">
                     <label for="contato-msg">Como podemos ajudar?*</label>
-                    <textarea id="contato-msg" rows="4" required placeholder="Escreva sua mensagem aqui..."></textarea>
+                    <textarea id="contato-msg" name="mensagem" rows="4" required placeholder="Escreva sua mensagem aqui..."></textarea>
                 </div>
-                <button type="submit" class="btn-primary">Enviar Mensagem</button>
+                <button type="submit" class="btn-primary" id="submit-btn">Enviar Mensagem</button>
             </form>
         </div>
     </div>
