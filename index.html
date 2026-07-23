@@ -62,14 +62,17 @@
         <!-- Caixa da Ferramenta -->
         <div class="tool-box">
             <h1>Separador de PDF 100% Grátis</h1>
-            <p class="subtitle">Faça upload de seus PDFs (de pastas diferentes se quiser), digite uma palavra-chave e geraremos um único arquivo com as páginas encontradas.</p>
+            <p class="subtitle">Importe PDFs de várias pastas diferentes. Eles ficarão acumulados na lista prontos para a varredura.</p>
 
             <div class="input-group">
-                <label for="pdf-files">1. Selecione os arquivos PDF:</label>
+                <label for="pdf-files">1. Selecione os arquivos PDF (acumulativo):</label>
                 <input type="file" id="pdf-files" accept=".pdf" multiple>
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 5px;">
-                    <p id="file-info" class="file-info-text hidden"></p>
-                    <button id="clear-files-btn" class="hidden" style="background: none; border: none; color: #ff6a00; font-size: 0.85rem; cursor: pointer; text-decoration: underline;">Limpar lista</button>
+                
+                <!-- Lista interativa dos arquivos acumulados -->
+                <div id="file-list-container" class="file-list-container hidden">
+                    <p class="file-list-title">Arquivos na fila:</p>
+                    <ul id="file-ul"></ul>
+                    <button id="clear-all-btn" class="btn-clear-all">Limpar Todos os Arquivos</button>
                 </div>
             </div>
 
@@ -80,10 +83,14 @@
 
             <button id="process-btn" class="btn-primary">Extrair e Gerar PDF</button>
 
-            <!-- Área de Status com contagem em tempo real -->
+            <!-- Área de Status com porcentagem e páginas em tempo real -->
             <div id="status-area" class="status-area hidden">
                 <div class="loader" id="loader"></div>
                 <p id="status-text">Iniciando contagem de páginas...</p>
+                <!-- Barra de progresso visual -->
+                <div class="progress-bar-bg">
+                    <div id="progress-bar-fill" class="progress-bar-fill"></div>
+                </div>
             </div>
 
             <div id="download-area" class="download-area hidden">
