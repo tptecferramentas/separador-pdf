@@ -226,3 +226,10 @@ footer {
     font-size: 1.1rem;
     letter-spacing: 0.5px;
 }
+
+.file-info-text {
+    margin-top: 8px;
+    font-size: 0.9rem;
+    color: var(--primary-blue);
+    font-weight: 600;
+}
