@@ -1,186 +1,188 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-<head>    
+<head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="google-site-verification" content="ZIKRbAgCIkpnGDstns2HczgLqklEb0ZBFSkoljZPqIo" />
+    <title>Separador de PDF - TP tec</title>
+    <link rel="icon" type="image/png" href="logo.png">
     
-    <!-- SEO para o Google -->
-    <title>Separador de PDF 100% Grátis | TP tec - Ferramentas</title>
-    <meta name="description" content="Separe páginas de arquivos PDF de forma rápida e gratuita usando uma palavra-chave. Busque por nomes, matrículas ou termos específicos e gere um novo PDF.">
-    <meta name="keywords" content="separar pdf, dividir pdf por palavra, extrair paginas pdf, ferramenta pdf gratis, buscar no pdf">
+    <!-- Biblioteca para manipulação de PDF no navegador -->
+    <script src="https://unpkg.com/pdf-lib@1.4.0/dist/pdf-lib.min.js"></script>
     
-    <link rel="stylesheet" href="style.css">
-    
-    <!-- Bibliotecas necessárias para processar PDF no navegador -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
-    <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+    <style>
+        :root {
+            --bg-main: #0b0f19;
+            --bg-card: #131c2e;
+            --border-color: #21304d;
+            --primary-orange: #ff6a00;
+            --secondary-orange: #ff8c33;
+            --text-main: #f1f5f9;
+            --text-muted: #94a3b8;
+            --secondary-blue: #60a5fa;
+        }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        body {
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            padding: 30px;
+            border-radius: 10px;
+            width: 100%;
+            max-width: 500px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            text-align: center;
+        }
+        h1 {
+            font-size: 1.4rem;
+            margin-bottom: 8px;
+            color: #fff;
+        }
+        p {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            margin-bottom: 20px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+            text-align: left;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: var(--secondary-blue);
+            font-size: 0.8rem;
+        }
+        input[type="file"], input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            background: #0b0f19;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            color: #fff;
+            font-size: 0.9rem;
+        }
+        input:focus {
+            outline: none;
+            border-color: var(--primary-orange);
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            background: var(--primary-orange);
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.3s;
+            margin-top: 10px;
+        }
+        button:hover {
+            background: var(--secondary-orange);
+        }
+        .back-link {
+            display: inline-block;
+            margin-top: 20px;
+            color: var(--secondary-blue);
+            text-decoration: none;
+            font-size: 0.85rem;
+        }
+        .back-link:hover {
+            text-decoration: underline;
+        }
+    </style>
 </head>
 <body>
 
-    <!-- Tela de Carregamento Inicial -->
-    <div id="page-loader">
-        <div class="spinner-orange"></div>
-        <p>Carregando, aguarde...</p>
-    </div>
-
-    <!-- Cabeçalho com Logo Melhorada -->
-    <header class="top-header">
-        <div class="header-content">
-            <img src="logo.png" alt="Logo TP tec" class="header-logo" onerror="this.style.display='none'">
-            <div class="logo-text">TP tec - Ferramentas</div>
-        </div>
-    </header>
-
-    <!-- Banner Adsterra Topo -->
-    <div class="ad-container">
-        <script>
-            atOptions = {
-                'key' : '66e510cf5fb42ab9066b080fb8c48c2e',
-                'format' : 'iframe',
-                'height' : 90,
-                'width' : 728,
-                'params' : {}
-            };
-        </script>
-        <script src="https://www.highperformanceformat.com/66e510cf5fb42ab9066b080fb8c48c2e/invoke.js"></script>
-    </div>
-
-    <!-- Área Principal com 3 Colunas -->
-    <main class="container">
+    <div class="card">
+        <h1>✂️ Separador de PDF</h1>
+        <p>Selecione o arquivo e defina as páginas (ex: 1, 3, 5-8).</p>
         
-        <!-- Anúncio Lateral Esquerdo -->
-        <div class="side-ad left-ad">
-            <script>
-                atOptions = {
-                    'key' : '2cadcec815b23b9842036a54bca5bd9c',
-                    'format' : 'iframe',
-                    'height' : 250,
-                    'width' : 300,
-                    'params' : {}
-                };
-            </script>
-            <script src="https://www.highperformanceformat.com/2cadcec815b23b9842036a54bca5bd9c/invoke.js"></script>
+        <div class="form-group">
+            <label for="pdfFile">Arquivo PDF</label>
+            <input type="file" id="pdfFile" accept="application/pdf">
         </div>
 
-        <!-- Caixa da Ferramenta -->
-        <div class="tool-box">
-            <h1>Separador de PDF 100% Grátis</h1>
-            <p class="subtitle">Importe PDFs de várias pastas diferentes. Eles ficarão acumulados na lista prontos para a varredura.</p>
-
-            <div class="input-group">
-                <label for="pdf-files">1. Selecione os arquivos PDF (acumulativo):</label>
-                <input type="file" id="pdf-files" accept=".pdf" multiple>
-                
-                <!-- Lista interativa dos arquivos acumulados -->
-                <div id="file-list-container" class="file-list-container hidden">
-                    <p class="file-list-title">Arquivos na fila:</p>
-                    <ul id="file-ul"></ul>
-                    <button id="clear-all-btn" class="btn-clear-all">Limpar Todos os Arquivos</button>
-                </div>
-            </div>
-
-            <div class="input-group">
-                <label for="keyword">2. Palavra-chave para busca (CTRL+F):</label>
-                <input type="text" id="keyword" placeholder="Ex: João da Silva, 123456...">
-            </div>
-
-            <button id="process-btn" class="btn-primary">Extrair e Gerar PDF</button>
-
-            <!-- Área de Status com porcentagem e páginas em tempo real -->
-            <div id="status-area" class="status-area hidden">
-                <div class="loader" id="loader"></div>
-                <p id="status-text">Iniciando contagem de páginas...</p>
-                <div class="progress-bar-bg">
-                    <div id="progress-bar-fill" class="progress-bar-fill"></div>
-                </div>
-            </div>
-
-            <div id="download-area" class="download-area hidden">
-                <p id="success-message">Sucesso! Encontramos páginas com sua palavra-chave.</p>
-                <button id="download-btn" class="btn-success">Baixar Novo PDF</button>
-            </div>
+        <div class="form-group">
+            <label for="pagesInput">Páginas a extrair</label>
+            <input type="text" id="pagesInput" placeholder="Ex: 1, 3, 2-5">
         </div>
 
-        <!-- Anúncio Lateral Direito -->
-        <div class="side-ad right-ad">
-            <script>
-                atOptions = {
-                    'key' : '2cadcec815b23b9842036a54bca5bd9c',
-                    'format' : 'iframe',
-                    'height' : 250,
-                    'width' : 300,
-                    'params' : {}
-                };
-            </script>
-            <script src="https://www.highperformanceformat.com/2cadcec815b23b9842036a54bca5bd9c/invoke.js"></script>
-        </div>
-
-    </main>
-
-    <footer>
-        <p>&copy; 2026 TP tec - Ferramentas. Todos os direitos reservados.</p>
-    </footer>
-
-    <!-- Botão Flutuante de Contato -->
-    <button class="fab-contact" id="fab-contact" title="Fale Conosco">
-        💬 Contato
-    </button>
-
-    <!-- Modal de Contato -->
-    <div id="contact-modal" class="modal-overlay">
-        <div class="modal-content">
-            <span class="close-modal" id="close-contact">&times;</span>
-            <h2>Fale com a TP tec</h2>
-            <p>Deixe sua mensagem, faça um orçamento ou tire dúvidas!</p>
-            <form id="contact-form">
-                <!-- Configurações Ocultas para o FormSubmit -->
-                <input type="hidden" name="_subject" value="Novo Contato - Site TP tec">
-                <input type="hidden" name="_template" value="table">
-                <input type="hidden" name="_captcha" value="false">
-                
-                <div class="form-group">
-                    <label for="contato-email">Seu E-mail (Obrigatório)*</label>
-                    <input type="email" id="contato-email" name="email" required placeholder="exemplo@email.com">
-                </div>
-                <div class="form-group">
-                    <label for="contato-zap">Seu WhatsApp (Opcional)</label>
-                    <input type="tel" id="contato-zap" name="whatsapp" placeholder="(00) 00000-0000">
-                </div>
-                <div class="form-group">
-                    <label for="contato-msg">Como podemos ajudar?*</label>
-                    <textarea id="contato-msg" name="mensagem" rows="4" required placeholder="Escreva sua mensagem aqui..."></textarea>
-                </div>
-                <button type="submit" class="btn-primary" id="submit-btn">Enviar Mensagem</button>
-            </form>
+        <button id="splitBtn">Separar e Baixar PDF</button>
+        
+        <div>
+            <a href="../index.html" class="back-link">← Voltar ao Portal Principal</a>
         </div>
     </div>
 
-    <!-- Modal OCR (Erro de Leitura PDF) -->
-    <div id="ocr-modal" class="modal-overlay">
-        <div class="modal-content text-center">
-            <span class="close-modal" id="close-ocr">&times;</span>
-            <h2 style="color: #e74c3c;">Palavra-chave não encontrada!</h2>
-            <p style="margin-top: 15px; color: #555;">
-                Não conseguimos localizar a palavra-chave em nenhum dos PDFs selecionados. 
-            </p>
-            <p style="margin-bottom: 25px; color: #555;">
-                <strong>Motivo comum:</strong> Seu PDF pode ser um arquivo gerado por scanner (uma imagem), o que o torna não pesquisável.
-            </p>
-            
-            <div class="ocr-call-to-action">
-                <p style="font-weight: bold; color: var(--primary-blue); margin-bottom: 10px;">
-                    Deseja transformar seu documento em um PDF pesquisável?
-                </p>
-                <a href="#" class="btn-interactive-pulse">
-                    ✨ Converter para PDF Pesquisável Agora ✨
-                </a>
-            </div>
-            
-            <button class="btn-clear-all" id="btn-close-ocr-alt" style="margin-top: 20px; width: auto; padding: 10px 20px;">Tentar com outro arquivo</button>
-        </div>
-    </div>
+    <script>
+        document.getElementById('splitBtn').addEventListener('click', async () => {
+            const fileInput = document.getElementById('pdfFile');
+            const pagesInput = document.getElementById('pagesInput').value.trim();
 
-    <script src="script.js"></script>
+            if (!fileInput.files.length) {
+                alert('Selecione um arquivo PDF primeiro.');
+                return;
+            }
+            if (!pagesInput) {
+                alert('Informe quais páginas deseja separar.');
+                return;
+            }
+
+            try {
+                const fileArrayBuffer = await fileInput.files[0].arrayBuffer();
+                const pdfDoc = await PDFLib.PDFDocument.load(fileArrayBuffer);
+                const newPdfDoc = await PDFLib.PDFDocument.create();
+
+                const pageIndices = [];
+                const parts = pagesInput.split(',');
+                
+                for (const part of parts) {
+                    if (part.includes('-')) {
+                        const [start, end] = part.split('-').map(n => parseInt(n.trim()) - 1);
+                        for (let i = start; i <= end; i++) {
+                            if (i >= 0 && i < pdfDoc.getPageCount()) pageIndices.push(i);
+                        }
+                    } else {
+                        const idx = parseInt(part.trim()) - 1;
+                        if (idx >= 0 && idx < pdfDoc.getPageCount()) pageIndices.push(idx);
+                    }
+                }
+
+                if (pageIndices.length === 0) {
+                    alert('Nenhuma página válida foi informada.');
+                    return;
+                }
+
+                const copiedPages = await newPdfDoc.copyPages(pdfDoc, pageIndices);
+                copiedPages.forEach(page => newPdfDoc.addPage(page));
+
+                const pdfBytes = await newPdfDoc.save();
+                const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(blob);
+                link.download = 'pdf-separado.pdf';
+                link.click();
+            } catch (err) {
+                console.error(err);
+                alert('Ocorreu um erro ao processar o arquivo PDF.');
+            }
+        });
+    </script>
 </body>
 </html>
