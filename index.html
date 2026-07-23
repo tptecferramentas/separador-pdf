@@ -24,40 +24,22 @@
         <p>Carregando, aguarde...</p>
     </div>
 
+    <!-- Cabeçalho com Logo Melhorada -->
     <header class="top-header">
-        <div class="logo">TP tec - Ferramentas</div>
+        <div class="header-content">
+            <img src="logo.png" alt="Logo TP tec" class="header-logo" onerror="this.style.display='none'">
+            <div class="logo-text">TP tec - Ferramentas</div>
+        </div>
     </header>
 
-    <!-- Banner Adsterra Topo -->
-    <div class="ad-container">
-        <script>
-            atOptions = {
-                'key' : '66e510cf5fb42ab9066b080fb8c48c2e',
-                'format' : 'iframe',
-                'height' : 90,
-                'width' : 728,
-                'params' : {}
-            };
-        </script>
-        <script src="https://www.highperformanceformat.com/66e510cf5fb42ab9066b080fb8c48c2e/invoke.js"></script>
-    </div>
+    <!-- Slot do Banner Adsterra Topo (Carregado via JS) -->
+    <div class="ad-container" id="top-ad-slot"></div>
 
     <!-- Área Principal com 3 Colunas -->
     <main class="container">
         
-        <!-- Anúncio Lateral Esquerdo -->
-        <div class="side-ad left-ad">
-            <script>
-                atOptions = {
-                    'key' : '2cadcec815b23b9842036a54bca5bd9c',
-                    'format' : 'iframe',
-                    'height' : 250,
-                    'width' : 300,
-                    'params' : {}
-                };
-            </script>
-            <script src="https://www.highperformanceformat.com/2cadcec815b23b9842036a54bca5bd9c/invoke.js"></script>
-        </div>
+        <!-- Slot Anúncio Lateral Esquerdo -->
+        <div class="side-ad left-ad" id="left-ad-slot"></div>
 
         <!-- Caixa da Ferramenta -->
         <div class="tool-box">
@@ -87,7 +69,6 @@
             <div id="status-area" class="status-area hidden">
                 <div class="loader" id="loader"></div>
                 <p id="status-text">Iniciando contagem de páginas...</p>
-                <!-- Barra de progresso visual -->
                 <div class="progress-bar-bg">
                     <div id="progress-bar-fill" class="progress-bar-fill"></div>
                 </div>
@@ -99,19 +80,8 @@
             </div>
         </div>
 
-        <!-- Anúncio Lateral Direito -->
-        <div class="side-ad right-ad">
-            <script>
-                atOptions = {
-                    'key' : '2cadcec815b23b9842036a54bca5bd9c',
-                    'format' : 'iframe',
-                    'height' : 250,
-                    'width' : 300,
-                    'params' : {}
-                };
-            </script>
-            <script src="https://www.highperformanceformat.com/2cadcec815b23b9842036a54bca5bd9c/invoke.js"></script>
-        </div>
+        <!-- Slot Anúncio Lateral Direito -->
+        <div class="side-ad right-ad" id="right-ad-slot"></div>
 
     </main>
 
@@ -119,16 +89,61 @@
         <p>&copy; 2026 TP tec - Ferramentas. Todos os direitos reservados.</p>
     </footer>
 
-    <script src="script.js"></script>
+    <!-- Botão Flutuante de Contato -->
+    <button class="fab-contact" id="fab-contact" title="Fale Conosco">
+        💬 Contato
+    </button>
 
-    <script>
-        window.addEventListener('load', () => {
-            const loader = document.getElementById('page-loader');
-            loader.style.opacity = '0';
-            setTimeout(() => {
-                loader.style.display = 'none';
-            }, 500);
-        });
-    </script>
+    <!-- Modal de Contato -->
+    <div id="contact-modal" class="modal-overlay">
+        <div class="modal-content">
+            <span class="close-modal" id="close-contact">&times;</span>
+            <h2>Fale com a TP tec</h2>
+            <p>Deixe sua mensagem, faça um orçamento ou tire dúvidas!</p>
+            <form id="contact-form">
+                <div class="form-group">
+                    <label for="contato-email">Seu E-mail (Obrigatório)*</label>
+                    <input type="email" id="contato-email" required placeholder="exemplo@email.com">
+                </div>
+                <div class="form-group">
+                    <label for="contato-zap">Seu WhatsApp (Opcional)</label>
+                    <input type="tel" id="contato-zap" placeholder="(00) 00000-0000">
+                </div>
+                <div class="form-group">
+                    <label for="contato-msg">Como podemos ajudar?*</label>
+                    <textarea id="contato-msg" rows="4" required placeholder="Escreva sua mensagem aqui..."></textarea>
+                </div>
+                <button type="submit" class="btn-primary">Enviar Mensagem</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal OCR (Erro de Leitura PDF) -->
+    <div id="ocr-modal" class="modal-overlay">
+        <div class="modal-content text-center">
+            <span class="close-modal" id="close-ocr">&times;</span>
+            <h2 style="color: #e74c3c;">Palavra-chave não encontrada!</h2>
+            <p style="margin-top: 15px; color: #555;">
+                Não conseguimos localizar a palavra-chave em nenhum dos PDFs selecionados. 
+            </p>
+            <p style="margin-bottom: 25px; color: #555;">
+                <strong>Motivo comum:</strong> Seu PDF pode ser um arquivo gerado por scanner (uma imagem), o que o torna não pesquisável.
+            </p>
+            
+            <div class="ocr-call-to-action">
+                <p style="font-weight: bold; color: var(--primary-blue); margin-bottom: 10px;">
+                    Deseja transformar seu documento em um PDF pesquisável?
+                </p>
+                <!-- SUBSTITUA O "#" ABAIXO PELO LINK DA SUA FUTURA PÁGINA -->
+                <a href="#" class="btn-interactive-pulse">
+                    ✨ Converter para PDF Pesquisável Agora ✨
+                </a>
+            </div>
+            
+            <button class="btn-clear-all" id="btn-close-ocr-alt" style="margin-top: 20px; width: auto; padding: 10px 20px;">Tentar com outro arquivo</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
 </body>
 </html>
