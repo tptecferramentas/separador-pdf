@@ -10,6 +10,9 @@
     <meta name="description" content="Separe páginas de arquivos PDF de forma rápida e gratuita usando uma palavra-chave. Busque por nomes, matrículas ou termos específicos e gere um novo PDF.">
     <meta name="keywords" content="separar pdf, dividir pdf por palavra, extrair paginas pdf, ferramenta pdf gratis, buscar no pdf">
     
+    <!-- Ícone na Aba do Navegador -->
+    <link rel="icon" type="image/png" href="logo.png">
+    
     <link rel="stylesheet" href="style.css">
     
     <!-- Bibliotecas necessárias para processar PDF no navegador -->
@@ -160,16 +163,16 @@
     <div id="ocr-modal" class="modal-overlay">
         <div class="modal-content text-center">
             <span class="close-modal" id="close-ocr">&times;</span>
-            <h2 style="color: #e74c3c;">Palavra-chave não encontrada!</h2>
-            <p style="margin-top: 15px; color: #555;">
+            <h2 style="color: #ff6a00;">Palavra-chave não encontrada!</h2>
+            <p style="margin-top: 15px; color: var(--text-muted);">
                 Não conseguimos localizar a palavra-chave em nenhum dos PDFs selecionados. 
             </p>
-            <p style="margin-bottom: 25px; color: #555;">
+            <p style="margin-bottom: 25px; color: var(--text-muted);">
                 <strong>Motivo comum:</strong> Seu PDF pode ser um arquivo gerado por scanner (uma imagem), o que o torna não pesquisável.
             </p>
             
             <div class="ocr-call-to-action">
-                <p style="font-weight: bold; color: var(--primary-blue); margin-bottom: 10px;">
+                <p style="font-weight: bold; color: var(--secondary-blue); margin-bottom: 10px;">
                     Deseja transformar seu documento em um PDF pesquisável?
                 </p>
                 <a href="#" class="btn-interactive-pulse">
