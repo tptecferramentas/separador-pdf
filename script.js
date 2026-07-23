@@ -12,46 +12,18 @@ const fileUl = document.getElementById('file-ul');
 const clearAllBtn = document.getElementById('clear-all-btn');
 
 // ==========================================
-// 1. CARREGAMENTO DA PÁGINA E ANÚNCIOS (LAZY LOAD)
+// 1. CARREGAMENTO DA PÁGINA (SUPER RÁPIDO)
 // ==========================================
-window.addEventListener('load', () => {
+// A tela de carregamento some assim que a estrutura HTML estiver pronta,
+// permitindo que os anúncios carreguem sem atrasar a visualização da ferramenta.
+document.addEventListener('DOMContentLoaded', () => {
     const loader = document.getElementById('page-loader');
     loader.style.opacity = '0';
     
     setTimeout(() => {
         loader.style.display = 'none';
-        // Atraso intencional para garantir que o usuário veja a página antes de pesar a rede
-        setTimeout(loadAds, 500); 
     }, 500);
 });
-
-function loadAds() {
-    const adsConfig = [
-        { slotId: 'top-ad-slot', key: '66e510cf5fb42ab9066b080fb8c48c2e' },
-        { slotId: 'left-ad-slot', key: '2cadcec815b23b9842036a54bca5bd9c' },
-        { slotId: 'right-ad-slot', key: '2cadcec815b23b9842036a54bca5bd9c' }
-    ];
-
-    adsConfig.forEach(ad => {
-        const container = document.getElementById(ad.slotId);
-        if (container) {
-            // Cria um script de forma dinâmica
-            const script = document.createElement('script');
-            script.type = 'text/javascript';
-            script.src = `https://www.highperformanceformat.com/${ad.key}/invoke.js`;
-            
-            // Adsterra exige que o atOptions esteja definido antes
-            window.atOptions = {
-                'key' : ad.key,
-                'format' : 'iframe',
-                'height' : (ad.slotId === 'top-ad-slot') ? 90 : 250,
-                'width' : (ad.slotId === 'top-ad-slot') ? 728 : 300,
-                'params' : {}
-            };
-            container.appendChild(script);
-        }
-    });
-}
 
 // ==========================================
 // 2. GERENCIAMENTO DE ARQUIVOS
@@ -190,7 +162,7 @@ document.getElementById('process-btn').addEventListener('click', async () => {
                 a.click();
             });
         } else {
-            // AQUI ESTÁ A MELHORIA: Em vez de alert, abre o Modal de Cross-sell (OCR)
+            // Se não achar nada, abre o Modal de Oferta/OCR
             document.getElementById('ocr-modal').classList.add('active');
         }
 
@@ -218,13 +190,12 @@ closeContact.addEventListener('click', () => contactModal.classList.remove('acti
 
 // Processar Envio do Formulário (Abre cliente de E-mail formatado)
 contactForm.addEventListener('submit', (e) => {
-    e.preventDefault(); // Evita recarregar a página
+    e.preventDefault(); 
 
     const email = document.getElementById('contato-email').value;
     const zap = document.getElementById('contato-zap').value || 'Não informado';
     const msg = document.getElementById('contato-msg').value;
 
-    // Formata a mensagem para a URL (quebra de linha e espaços)
     const assunto = encodeURIComponent("Novo Contato - Site TP tec");
     const corpo = encodeURIComponent(
         `E-mail de retorno: ${email}\nWhatsApp: ${zap}\n\nMensagem:\n${msg}`
